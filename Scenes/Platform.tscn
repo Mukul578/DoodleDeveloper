@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://doodle_platform"]
+
+[ext_resource type="Script" path="res://Scripts/platform.gd" id="1_platform_script"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/platform_normal.png" id="2_platform_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(152, 28)
+
+[node name="Platform" type="AnimatableBody2D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_platform_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_platform_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_platform")
