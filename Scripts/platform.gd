@@ -38,6 +38,8 @@ func on_player_landed(player: Node) -> void:
 		return
 
 	if platform_type == PlatformType.BREAKABLE:
+		if player.has_method("bounce"):
+			player.bounce()
 		_break()
 		return
 

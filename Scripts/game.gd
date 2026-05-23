@@ -5,6 +5,7 @@ const PLATFORM_SCENE := preload("res://Scenes/Platform.tscn")
 const START_Y := 1040.0
 const PLATFORM_VERTICAL_GAP := Vector2(105.0, 165.0)
 const CLEANUP_MARGIN := 180.0
+const SCORE_PIXELS_PER_POINT := 10.0
 
 @onready var player: CharacterBody2D = $Player
 @onready var camera: Camera2D = $Camera2D
@@ -104,9 +105,9 @@ func _spawn_platform(spawn_position: Vector2, type: int) -> void:
 
 func _choose_platform_type() -> int:
 	var roll := randf()
-	if score > 700 and roll < 0.16:
+	if score > 70 and roll < 0.16:
 		return 2
-	if score > 350 and roll < 0.38:
+	if score > 35 and roll < 0.38:
 		return 1
 	return 0
 
@@ -119,7 +120,7 @@ func _update_camera() -> void:
 
 func _update_score() -> void:
 	highest_y = min(highest_y, player.position.y)
-	score = max(score, int(score_start_y - highest_y))
+	score = max(score, int((score_start_y - highest_y) / SCORE_PIXELS_PER_POINT))
 	score_label.text = "%06d" % score
 
 
