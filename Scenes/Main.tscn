@@ -1,7 +1,29 @@
-[gd_scene load_steps=7 format=3 uid="uid://doodle_main"]
+[gd_scene format=3 uid="uid://lkhnhulc2b7y"]
 
-[ext_resource type="Script" path="res://Scripts/game.gd" id="1_game_script"]
+[ext_resource type="Script" uid="uid://bma4jj7l65pka" path="res://Scripts/game.gd" id="1_game_script"]
 [ext_resource type="PackedScene" path="res://Scenes/Player.tscn" id="2_player_scene"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+bg_color = Color(0.075, 0.08, 0.095, 0.92)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+content_margin_left = 24.0
+content_margin_top = 16.0
+content_margin_right = 24.0
+content_margin_bottom = 16.0
+bg_color = Color(0.12, 0.48, 0.74, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_left_touch"]
 size = Vector2(360, 1280)
@@ -9,54 +31,31 @@ size = Vector2(360, 1280)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_right_touch"]
 size = Vector2(360, 1280)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.075, 0.08, 0.095, 0.92)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 28.0
-content_margin_top = 24.0
-content_margin_right = 28.0
-content_margin_bottom = 24.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
-bg_color = Color(0.12, 0.48, 0.74, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 24.0
-content_margin_top = 16.0
-content_margin_right = 24.0
-content_margin_bottom = 16.0
-
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=689423973]
 script = ExtResource("1_game_script")
 
-[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+[node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=302644755]
 layer = -10
 
-[node name="Background" type="ColorRect" parent="BackgroundLayer"]
+[node name="Background" type="ColorRect" parent="BackgroundLayer" unique_id=397583344]
 offset_right = 720.0
 offset_bottom = 1280.0
 color = Color(0.92, 0.965, 1, 1)
 
-[node name="Platforms" type="Node2D" parent="."]
+[node name="Platforms" type="Node2D" parent="." unique_id=23798112]
 
-[node name="Player" parent="." instance=ExtResource("2_player_scene")]
+[node name="Player" parent="." unique_id=812478769 instance=ExtResource("2_player_scene")]
 position = Vector2(360, 950)
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1281646941]
 position = Vector2(360, 640)
-enabled = true
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="Node" parent="." unique_id=1768335966]
 
-[node name="MenuLayer" type="CanvasLayer" parent="UI"]
+[node name="MenuLayer" type="CanvasLayer" parent="UI" unique_id=928089406]
 layer = 5
 
-[node name="Panel" type="Panel" parent="UI/MenuLayer"]
+[node name="Panel" type="Panel" parent="UI/MenuLayer" unique_id=2146654511]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -70,8 +69,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/MenuLayer/Panel"]
-anchors_preset = 15
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MenuLayer/Panel" unique_id=403864700]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 28.0
@@ -82,33 +81,36 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="UI/MenuLayer/Panel/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="UI/MenuLayer/Panel/VBoxContainer" unique_id=1582669582]
 custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
 theme_override_font_sizes/font_size = 44
 text = "Doodle Developer"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SubtitleLabel" type="Label" parent="UI/MenuLayer/Panel/VBoxContainer"]
+[node name="SubtitleLabel" type="Label" parent="UI/MenuLayer/Panel/VBoxContainer" unique_id=462710114]
 custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Salta, programa y sube sin parar"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StartButton" type="Button" parent="UI/MenuLayer/Panel/VBoxContainer"]
+[node name="StartButton" type="Button" parent="UI/MenuLayer/Panel/VBoxContainer" unique_id=1698694377]
 custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_button")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Jugar"
 
-[node name="HUDLayer" type="CanvasLayer" parent="UI"]
+[node name="HUDLayer" type="CanvasLayer" parent="UI" unique_id=788094668]
 layer = 10
 visible = false
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/HUDLayer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/HUDLayer" unique_id=571856896]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 92.0
@@ -118,28 +120,31 @@ theme_override_constants/margin_top = 18
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 8
 
-[node name="ScoreLabel" type="Label" parent="UI/HUDLayer/MarginContainer"]
+[node name="ScoreLabel" type="Label" parent="UI/HUDLayer/MarginContainer" unique_id=301958706]
+layout_mode = 2
 theme_override_font_sizes/font_size = 38
 text = "000000"
 horizontal_alignment = 2
 
-[node name="LeftTouch" type="TouchScreenButton" parent="UI/HUDLayer"]
+[node name="LeftTouch" type="TouchScreenButton" parent="UI/HUDLayer" unique_id=846647538]
 position = Vector2(0, 0)
 shape = SubResource("RectangleShape2D_left_touch")
 shape_centered = false
 passby_press = true
+action = "move_left"
 
-[node name="RightTouch" type="TouchScreenButton" parent="UI/HUDLayer"]
+[node name="RightTouch" type="TouchScreenButton" parent="UI/HUDLayer" unique_id=944821157]
 position = Vector2(360, 0)
 shape = SubResource("RectangleShape2D_right_touch")
 shape_centered = false
 passby_press = true
+action = "move_right"
 
-[node name="GameOverLayer" type="CanvasLayer" parent="UI"]
+[node name="GameOverLayer" type="CanvasLayer" parent="UI" unique_id=804624740]
 layer = 20
 visible = false
 
-[node name="Panel" type="Panel" parent="UI/GameOverLayer"]
+[node name="Panel" type="Panel" parent="UI/GameOverLayer" unique_id=778118198]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -153,8 +158,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/GameOverLayer/Panel"]
-anchors_preset = 15
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/GameOverLayer/Panel" unique_id=639636674]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 28.0
@@ -165,24 +170,27 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="UI/GameOverLayer/Panel/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="UI/GameOverLayer/Panel/VBoxContainer" unique_id=890500782]
 custom_minimum_size = Vector2(0, 82)
+layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "Game Over"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="FinalScoreLabel" type="Label" parent="UI/GameOverLayer/Panel/VBoxContainer"]
+[node name="FinalScoreLabel" type="Label" parent="UI/GameOverLayer/Panel/VBoxContainer" unique_id=214834419]
 custom_minimum_size = Vector2(0, 74)
+layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "Puntuacion: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RetryButton" type="Button" parent="UI/GameOverLayer/Panel/VBoxContainer"]
+[node name="RetryButton" type="Button" parent="UI/GameOverLayer/Panel/VBoxContainer" unique_id=456598958]
 custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_button")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Reintentar"
