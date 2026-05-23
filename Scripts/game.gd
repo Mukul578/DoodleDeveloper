@@ -15,8 +15,6 @@ const SCORE_PIXELS_PER_POINT := 10.0
 @onready var game_over_layer: CanvasLayer = $UI/GameOverLayer
 @onready var score_label: Label = $UI/HUDLayer/MarginContainer/ScoreLabel
 @onready var final_score_label: Label = $UI/GameOverLayer/Panel/VBoxContainer/FinalScoreLabel
-@onready var left_touch: TouchScreenButton = $UI/HUDLayer/LeftTouch
-@onready var right_touch: TouchScreenButton = $UI/HUDLayer/RightTouch
 
 var score := 0
 var highest_y := START_Y
@@ -28,10 +26,6 @@ var running := false
 func _ready() -> void:
 	randomize()
 	player.viewport_width = VIEWPORT_SIZE.x
-	left_touch.pressed.connect(_on_left_touch_pressed)
-	left_touch.released.connect(_on_touch_released)
-	right_touch.pressed.connect(_on_right_touch_pressed)
-	right_touch.released.connect(_on_touch_released)
 	$UI/MenuLayer/Panel/VBoxContainer/StartButton.pressed.connect(start_game)
 	$UI/GameOverLayer/Panel/VBoxContainer/RetryButton.pressed.connect(start_game)
 	_show_menu()
@@ -140,15 +134,3 @@ func _check_game_over() -> void:
 func _clear_platforms() -> void:
 	for platform in platforms_root.get_children():
 		platform.queue_free()
-
-
-func _on_left_touch_pressed() -> void:
-	player.touch_direction = -1.0
-
-
-func _on_right_touch_pressed() -> void:
-	player.touch_direction = 1.0
-
-
-func _on_touch_released() -> void:
-	player.touch_direction = 0.0

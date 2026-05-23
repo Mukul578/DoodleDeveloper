@@ -108,7 +108,16 @@ text = "Jugar"
 
 [node name="HUDLayer" type="CanvasLayer" parent="UI" unique_id=788094668]
 layer = 10
-visible = false
+
+[node name="TouchControls" type="Control" parent="UI/HUDLayer"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="UI/HUDLayer" unique_id=571856896]
 anchors_preset = 10
@@ -126,19 +135,19 @@ theme_override_font_sizes/font_size = 38
 text = "000000"
 horizontal_alignment = 2
 
-[node name="LeftTouch" type="TouchScreenButton" parent="UI/HUDLayer" unique_id=846647538]
-position = Vector2(0, 0)
+[node name="LeftTouch" type="TouchScreenButton" parent="UI/HUDLayer/TouchControls" unique_id=846647538]
+position = Vector2(180, 640)
 shape = SubResource("RectangleShape2D_left_touch")
-shape_centered = false
 passby_press = true
 action = "move_left"
+visibility_mode = 1
 
-[node name="RightTouch" type="TouchScreenButton" parent="UI/HUDLayer" unique_id=944821157]
-position = Vector2(360, 0)
+[node name="RightTouch" type="TouchScreenButton" parent="UI/HUDLayer/TouchControls" unique_id=944821157]
+position = Vector2(540, 640)
 shape = SubResource("RectangleShape2D_right_touch")
-shape_centered = false
 passby_press = true
 action = "move_right"
+visibility_mode = 1
 
 [node name="GameOverLayer" type="CanvasLayer" parent="UI" unique_id=804624740]
 layer = 20
