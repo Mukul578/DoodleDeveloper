@@ -19,6 +19,7 @@ const CLEANUP_MARGIN := 180.0
 
 var score := 0
 var highest_y := START_Y
+var score_start_y := START_Y
 var next_platform_y := START_Y
 var running := false
 
@@ -49,11 +50,13 @@ func _process(_delta: float) -> void:
 func start_game() -> void:
 	_clear_platforms()
 	score = 0
-	highest_y = START_Y
+	score_start_y = START_Y - 90.0
+	highest_y = score_start_y
 	next_platform_y = START_Y
 	camera.position = Vector2(VIEWPORT_SIZE.x * 0.5, VIEWPORT_SIZE.y * 0.5)
-	player.reset(Vector2(VIEWPORT_SIZE.x * 0.5, START_Y - 90.0))
+	player.reset(Vector2(VIEWPORT_SIZE.x * 0.5, score_start_y))
 	_create_starting_platforms()
+	score_label.text = "%06d" % score
 	_set_ui_state(false, true, false)
 	running = true
 
@@ -116,7 +119,7 @@ func _update_camera() -> void:
 
 func _update_score() -> void:
 	highest_y = min(highest_y, player.position.y)
-	score = max(score, int(START_Y - highest_y))
+	score = max(score, int(score_start_y - highest_y))
 	score_label.text = "%06d" % score
 
 
