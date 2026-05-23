@@ -28,10 +28,11 @@ func _physics_process(delta: float) -> void:
 
 	velocity.x = direction * move_speed
 	velocity.y += gravity * delta
+	var was_falling := velocity.y > 0.0
 
 	move_and_slide()
 	_wrap_horizontally()
-	_handle_platform_bounce()
+	_handle_platform_bounce(was_falling)
 
 
 func bounce(extra_multiplier := 1.0) -> void:
@@ -52,8 +53,8 @@ func _wrap_horizontally() -> void:
 		position.x = -margin
 
 
-func _handle_platform_bounce() -> void:
-	if velocity.y <= 0.0:
+func _handle_platform_bounce(was_falling: bool) -> void:
+	if not was_falling:
 		return
 
 	for index in get_slide_collision_count():
