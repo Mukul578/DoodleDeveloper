@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bma4jj7l65pka" path="res://Scripts/game.gd" id="1_game_script"]
 [ext_resource type="PackedScene" path="res://Scenes/Player.tscn" id="2_player_scene"]
-[ext_resource type="AudioStream" path="res://Assets/Audio/jump.wav" id="3_jump_sfx"]
-[ext_resource type="AudioStream" path="res://Assets/Audio/break.wav" id="4_break_sfx"]
-[ext_resource type="AudioStream" path="res://Assets/Audio/fall.wav" id="5_fall_sfx"]
-[ext_resource type="AudioStream" path="res://Assets/Audio/music_loop.wav" id="6_music_loop"]
-[ext_resource type="AudioStream" path="res://Assets/Audio/platform_normal_land.wav" id="7_platform_normal"]
-[ext_resource type="AudioStream" path="res://Assets/Audio/platform_moving_land.wav" id="8_platform_moving"]
-[ext_resource type="AudioStream" path="res://Assets/Audio/platform_breakable_land.wav" id="9_platform_breakable"]
+[ext_resource type="AudioStream" uid="uid://q6r5xvvf7e7a" path="res://Assets/Audio/jump.wav" id="3_jump_sfx"]
+[ext_resource type="AudioStream" uid="uid://k8xfmj5qilpi" path="res://Assets/Audio/break.wav" id="4_break_sfx"]
+[ext_resource type="AudioStream" uid="uid://bcwgmah2f2y23" path="res://Assets/Audio/fall.wav" id="5_fall_sfx"]
+[ext_resource type="AudioStream" uid="uid://djb3pegmfobsi" path="res://Assets/Audio/music_loop.wav" id="6_music_loop"]
+[ext_resource type="AudioStream" uid="uid://rowmh8lcpxfa" path="res://Assets/Audio/platform_normal_land.wav" id="7_platform_normal"]
+[ext_resource type="AudioStream" uid="uid://b7pahpt0e508u" path="res://Assets/Audio/platform_moving_land.wav" id="8_platform_moving"]
+[ext_resource type="AudioStream" uid="uid://ymcn3n6c5il" path="res://Assets/Audio/platform_breakable_land.wav" id="9_platform_breakable"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 28.0
@@ -54,33 +54,33 @@ process_mode = 1
 process_mode = 1
 position = Vector2(360, 950)
 
-[node name="Audio" type="Node" parent="."]
+[node name="Audio" type="Node" parent="." unique_id=967543077]
 
-[node name="JumpSFX" type="AudioStreamPlayer" parent="Audio"]
+[node name="JumpSFX" type="AudioStreamPlayer" parent="Audio" unique_id=177330453]
 stream = ExtResource("3_jump_sfx")
 volume_db = -7.0
 
-[node name="BreakSFX" type="AudioStreamPlayer" parent="Audio"]
+[node name="BreakSFX" type="AudioStreamPlayer" parent="Audio" unique_id=1455643258]
 stream = ExtResource("4_break_sfx")
 volume_db = -5.0
 
-[node name="FallSFX" type="AudioStreamPlayer" parent="Audio"]
+[node name="FallSFX" type="AudioStreamPlayer" parent="Audio" unique_id=269547511]
 stream = ExtResource("5_fall_sfx")
 volume_db = -6.0
 
-[node name="NormalPlatformSFX" type="AudioStreamPlayer" parent="Audio"]
+[node name="NormalPlatformSFX" type="AudioStreamPlayer" parent="Audio" unique_id=1493345113]
 stream = ExtResource("7_platform_normal")
 volume_db = -6.0
 
-[node name="MovingPlatformSFX" type="AudioStreamPlayer" parent="Audio"]
+[node name="MovingPlatformSFX" type="AudioStreamPlayer" parent="Audio" unique_id=239540977]
 stream = ExtResource("8_platform_moving")
 volume_db = -6.0
 
-[node name="BreakablePlatformSFX" type="AudioStreamPlayer" parent="Audio"]
+[node name="BreakablePlatformSFX" type="AudioStreamPlayer" parent="Audio" unique_id=994054373]
 stream = ExtResource("9_platform_breakable")
 volume_db = -6.0
 
-[node name="Music" type="AudioStreamPlayer" parent="Audio"]
+[node name="Music" type="AudioStreamPlayer" parent="Audio" unique_id=223222568]
 stream = ExtResource("6_music_loop")
 volume_db = -4.0
 autoplay = true
@@ -144,7 +144,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Jugar"
 
-[node name="SettingsButton" type="Button" parent="UI/MenuLayer/Panel/VBoxContainer"]
+[node name="SettingsButton" type="Button" parent="UI/MenuLayer/Panel/VBoxContainer" unique_id=872513747]
 custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
@@ -156,7 +156,7 @@ text = "Configuracion"
 [node name="HUDLayer" type="CanvasLayer" parent="UI" unique_id=788094668]
 layer = 10
 
-[node name="TouchControls" type="Control" parent="UI/HUDLayer"]
+[node name="TouchControls" type="Control" parent="UI/HUDLayer" unique_id=711575070]
 process_mode = 3
 layout_mode = 3
 anchors_preset = 15
@@ -182,7 +182,7 @@ theme_override_font_sizes/font_size = 38
 text = "000000"
 horizontal_alignment = 2
 
-[node name="PauseButton" type="Button" parent="UI/HUDLayer"]
+[node name="PauseButton" type="Button" parent="UI/HUDLayer" unique_id=881696057]
 offset_left = 24.0
 offset_top = 22.0
 offset_right = 88.0
@@ -239,7 +239,7 @@ text = "Puntuacion: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BestScoreLabel" type="Label" parent="UI/GameOverLayer/Panel/VBoxContainer"]
+[node name="BestScoreLabel" type="Label" parent="UI/GameOverLayer/Panel/VBoxContainer" unique_id=541923681]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
@@ -256,7 +256,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Reintentar"
 
-[node name="MenuButton" type="Button" parent="UI/GameOverLayer/Panel/VBoxContainer"]
+[node name="MenuButton" type="Button" parent="UI/GameOverLayer/Panel/VBoxContainer" unique_id=1019175559]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
@@ -265,12 +265,12 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Menu principal"
 
-[node name="PauseLayer" type="CanvasLayer" parent="UI"]
+[node name="PauseLayer" type="CanvasLayer" parent="UI" unique_id=1525934077]
 process_mode = 3
 layer = 30
 visible = false
 
-[node name="Panel" type="Panel" parent="UI/PauseLayer"]
+[node name="Panel" type="Panel" parent="UI/PauseLayer" unique_id=1931829972]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -284,7 +284,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseLayer/Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseLayer/Panel" unique_id=1495805524]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -296,7 +296,7 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="UI/PauseLayer/Panel/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="UI/PauseLayer/Panel/VBoxContainer" unique_id=2144197848]
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
@@ -304,7 +304,7 @@ text = "Pausa"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="UI/PauseLayer/Panel/VBoxContainer"]
+[node name="ResumeButton" type="Button" parent="UI/PauseLayer/Panel/VBoxContainer" unique_id=1393545079]
 custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
@@ -313,7 +313,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Continuar"
 
-[node name="PauseSettingsButton" type="Button" parent="UI/PauseLayer/Panel/VBoxContainer"]
+[node name="PauseSettingsButton" type="Button" parent="UI/PauseLayer/Panel/VBoxContainer" unique_id=215296008]
 custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
@@ -322,7 +322,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Configuracion"
 
-[node name="PauseMenuButton" type="Button" parent="UI/PauseLayer/Panel/VBoxContainer"]
+[node name="PauseMenuButton" type="Button" parent="UI/PauseLayer/Panel/VBoxContainer" unique_id=1549386543]
 custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
@@ -331,12 +331,12 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "Menu principal"
 
-[node name="SettingsLayer" type="CanvasLayer" parent="UI"]
+[node name="SettingsLayer" type="CanvasLayer" parent="UI" unique_id=1629650118]
 process_mode = 3
 layer = 40
 visible = false
 
-[node name="Panel" type="Panel" parent="UI/SettingsLayer"]
+[node name="Panel" type="Panel" parent="UI/SettingsLayer" unique_id=1737347322]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -350,7 +350,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/SettingsLayer/Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/SettingsLayer/Panel" unique_id=1910465519]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -362,7 +362,7 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="UI/SettingsLayer/Panel/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="UI/SettingsLayer/Panel/VBoxContainer" unique_id=570624995]
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 theme_override_font_sizes/font_size = 38
@@ -370,33 +370,33 @@ text = "Configuracion"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MusicLabel" type="Label" parent="UI/SettingsLayer/Panel/VBoxContainer"]
+[node name="MusicLabel" type="Label" parent="UI/SettingsLayer/Panel/VBoxContainer" unique_id=629282201]
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Musica"
 
-[node name="MusicSlider" type="HSlider" parent="UI/SettingsLayer/Panel/VBoxContainer"]
+[node name="MusicSlider" type="HSlider" parent="UI/SettingsLayer/Panel/VBoxContainer" unique_id=317935549]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="EffectsLabel" type="Label" parent="UI/SettingsLayer/Panel/VBoxContainer"]
+[node name="EffectsLabel" type="Label" parent="UI/SettingsLayer/Panel/VBoxContainer" unique_id=1000101205]
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Efectos"
 
-[node name="EffectsSlider" type="HSlider" parent="UI/SettingsLayer/Panel/VBoxContainer"]
+[node name="EffectsSlider" type="HSlider" parent="UI/SettingsLayer/Panel/VBoxContainer" unique_id=693007976]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 max_value = 1.0
 step = 0.01
 value = 0.85
 
-[node name="SettingsBackButton" type="Button" parent="UI/SettingsLayer/Panel/VBoxContainer"]
+[node name="SettingsBackButton" type="Button" parent="UI/SettingsLayer/Panel/VBoxContainer" unique_id=2652590]
 custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24

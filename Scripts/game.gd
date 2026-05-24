@@ -2,9 +2,8 @@ extends Node2D
 
 const BASE_VIEWPORT_WIDTH := 720.0
 const BASE_VIEWPORT_HEIGHT := 1280.0
-const TOUCH_DEADZONE := 4.0
-const TOUCH_SPEED_REFERENCE := 28.0
-const TOUCH_STILL_TIMEOUT_MS := 80
+const TOUCH_SLIDER_DEADZONE := 18.0
+const TOUCH_SLIDER_RANGE := 160.0
 const PLATFORM_SCENE := preload("res://Scenes/Platform.tscn")
 const PLATFORM_NORMAL := 0
 const PLATFORM_MOVING := 1
@@ -48,7 +47,8 @@ var _music_volume := 1.0
 var _effects_volume := 0.85
 var _viewport_size := Vector2(BASE_VIEWPORT_WIDTH, BASE_VIEWPORT_HEIGHT)
 var _active_touch_index := -1
-var _last_touch_drag_time_ms := 0
+var _touch_slider_origin_x := 0.0
+var _touch_slider_position_x := 0.0
 
 
 func _ready() -> void:
@@ -70,25 +70,22 @@ func _ready() -> void:
 	_show_menu()
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not running or paused:
 		return
 
 	if event is InputEventScreenTouch:
 		if event.pressed and _active_touch_index == -1:
 			_active_touch_index = event.index
-			_last_touch_drag_time_ms = Time.get_ticks_msec()
+			_touch_slider_origin_x = event.position.x
+			_touch_slider_position_x = event.position.x
 			player.touch_direction = 0.0
 		elif not event.pressed and event.index == _active_touch_index:
 			_active_touch_index = -1
 			player.touch_direction = 0.0
 	elif event is InputEventScreenDrag and event.index == _active_touch_index:
-		var delta_x: float = event.relative.x
-		_last_touch_drag_time_ms = Time.get_ticks_msec()
-		if absf(delta_x) <= TOUCH_DEADZONE:
-			player.touch_direction = 0.0
-		else:
-			player.touch_direction = clampf(delta_x / TOUCH_SPEED_REFERENCE, -1.0, 1.0)
+		_touch_slider_position_x = event.position.x
+		_update_touch_slider_direction()
 
 
 func _process(_delta: float) -> void:
@@ -96,7 +93,6 @@ func _process(_delta: float) -> void:
 	if not running or paused:
 		return
 
-	_stop_touch_movement_when_still()
 	_update_camera()
 	_update_score()
 	_spawn_platforms_until_ready()
@@ -139,7 +135,6 @@ func pause_game() -> void:
 	pause_layer.visible = true
 	touch_controls.visible = false
 	_active_touch_index = -1
-	_last_touch_drag_time_ms = 0
 	player.touch_direction = 0.0
 	Input.action_release("move_left")
 	Input.action_release("move_right")
@@ -329,8 +324,9 @@ func _refresh_viewport_size() -> void:
 	camera.position.x = _viewport_size.x * 0.5
 
 
-func _stop_touch_movement_when_still() -> void:
-	if _active_touch_index == -1 or is_zero_approx(player.touch_direction):
-		return
-	if Time.get_ticks_msec() - _last_touch_drag_time_ms > TOUCH_STILL_TIMEOUT_MS:
+func _update_touch_slider_direction() -> void:
+	var displacement := _touch_slider_position_x - _touch_slider_origin_x
+	if absf(displacement) <= TOUCH_SLIDER_DEADZONE:
 		player.touch_direction = 0.0
+	else:
+		player.touch_direction = clampf(displacement / TOUCH_SLIDER_RANGE, -1.0, 1.0)
