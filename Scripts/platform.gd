@@ -1,5 +1,7 @@
 extends AnimatableBody2D
 
+signal broken
+
 enum PlatformType { NORMAL, MOVING, BREAKABLE }
 
 @export var platform_type := PlatformType.NORMAL
@@ -49,6 +51,7 @@ func on_player_landed(player: Node) -> void:
 
 func _break() -> void:
 	_broken = true
+	broken.emit()
 	collision_shape.set_deferred("disabled", true)
 	if sprite != null:
 		sprite.modulate = Color(1.0, 0.55, 0.45, 0.65)

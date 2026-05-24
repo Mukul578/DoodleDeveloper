@@ -1,14 +1,19 @@
 extends CharacterBody2D
 
 signal fell_below_screen
+signal bounced
 
 @export var move_speed := 520.0
 @export var jump_velocity := -940.0
 @export var gravity := 2200.0
 @export var viewport_width := 720.0
 
+@onready var visual_root: Node2D = $VisualRoot
+
 var active := false
 var touch_direction := 0.0
+var _visual_tween: Tween
+var _falling_pose := false
 
 
 func reset(start_position: Vector2) -> void:
@@ -16,6 +21,7 @@ func reset(start_position: Vector2) -> void:
 	velocity = Vector2.ZERO
 	active = true
 	touch_direction = 0.0
+	_reset_visual_pose()
 
 
 func _physics_process(delta: float) -> void:
@@ -33,16 +39,20 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_wrap_horizontally()
 	_handle_platform_bounce(was_falling)
+	_update_air_pose()
 
 
 func bounce(extra_multiplier := 1.0) -> void:
 	velocity.y = jump_velocity * extra_multiplier
+	bounced.emit()
+	_play_jump_animation()
 
 
 func stop() -> void:
 	active = false
 	velocity = Vector2.ZERO
 	touch_direction = 0.0
+	_reset_visual_pose()
 
 
 func _wrap_horizontally() -> void:
@@ -66,3 +76,44 @@ func _handle_platform_bounce(was_falling: bool) -> void:
 			else:
 				bounce()
 			break
+
+
+func _update_air_pose() -> void:
+	if velocity.y > 90.0:
+		if not _falling_pose:
+			_falling_pose = true
+			_tween_visual(Vector2(1.06, 0.94), Vector2(0.0, 4.0), 0.16)
+	elif velocity.y < -90.0:
+		_falling_pose = false
+		if _visual_tween == null or not _visual_tween.is_running():
+			_tween_visual(Vector2(0.92, 1.10), Vector2(0.0, -4.0), 0.12)
+
+
+func _play_jump_animation() -> void:
+	_falling_pose = false
+	if _visual_tween != null:
+		_visual_tween.kill()
+
+	visual_root.scale = Vector2(1.18, 0.82)
+	visual_root.position = Vector2(0.0, 8.0)
+	_visual_tween = create_tween()
+	_visual_tween.tween_property(visual_root, "scale", Vector2(0.86, 1.16), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_visual_tween.parallel().tween_property(visual_root, "position", Vector2(0.0, -6.0), 0.08)
+	_visual_tween.tween_property(visual_root, "scale", Vector2(1.0, 1.0), 0.14).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_visual_tween.parallel().tween_property(visual_root, "position", Vector2.ZERO, 0.14)
+
+
+func _tween_visual(target_scale: Vector2, target_position: Vector2, duration: float) -> void:
+	if _visual_tween != null:
+		_visual_tween.kill()
+	_visual_tween = create_tween()
+	_visual_tween.tween_property(visual_root, "scale", target_scale, duration)
+	_visual_tween.parallel().tween_property(visual_root, "position", target_position, duration)
+
+
+func _reset_visual_pose() -> void:
+	_falling_pose = false
+	if _visual_tween != null:
+		_visual_tween.kill()
+	visual_root.scale = Vector2.ONE
+	visual_root.position = Vector2.ZERO

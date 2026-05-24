@@ -15,8 +15,14 @@ const SCORE_PIXELS_PER_POINT := 10.0
 @onready var game_over_layer: CanvasLayer = $UI/GameOverLayer
 @onready var score_label: Label = $UI/HUDLayer/MarginContainer/ScoreLabel
 @onready var final_score_label: Label = $UI/GameOverLayer/Panel/VBoxContainer/FinalScoreLabel
+@onready var best_score_label: Label = $UI/GameOverLayer/Panel/VBoxContainer/BestScoreLabel
+@onready var jump_sfx: AudioStreamPlayer = $Audio/JumpSFX
+@onready var break_sfx: AudioStreamPlayer = $Audio/BreakSFX
+@onready var fall_sfx: AudioStreamPlayer = $Audio/FallSFX
+@onready var music: AudioStreamPlayer = $Audio/Music
 
 var score := 0
+var best_score := 0
 var highest_y := START_Y
 var score_start_y := START_Y
 var next_platform_y := START_Y
@@ -26,8 +32,11 @@ var running := false
 func _ready() -> void:
 	randomize()
 	player.viewport_width = VIEWPORT_SIZE.x
+	player.bounced.connect(_on_player_bounced)
 	$UI/MenuLayer/Panel/VBoxContainer/StartButton.pressed.connect(start_game)
 	$UI/GameOverLayer/Panel/VBoxContainer/RetryButton.pressed.connect(start_game)
+	$UI/GameOverLayer/Panel/VBoxContainer/MenuButton.pressed.connect(show_main_menu)
+	music.finished.connect(_on_music_finished)
 	_show_menu()
 
 
@@ -53,7 +62,15 @@ func start_game() -> void:
 	_create_starting_platforms()
 	score_label.text = "%06d" % score
 	_set_ui_state(false, true, false)
+	_play_music()
 	running = true
+
+
+func show_main_menu() -> void:
+	_clear_platforms()
+	camera.position = Vector2(VIEWPORT_SIZE.x * 0.5, VIEWPORT_SIZE.y * 0.5)
+	player.position = Vector2(VIEWPORT_SIZE.x * 0.5, START_Y - 90.0)
+	_show_menu()
 
 
 func _show_menu() -> void:
@@ -65,8 +82,11 @@ func _show_menu() -> void:
 func _game_over() -> void:
 	running = false
 	player.stop()
+	best_score = max(best_score, score)
 	final_score_label.text = "Puntuacion: %d" % score
+	best_score_label.text = "Record: %d" % best_score
 	_set_ui_state(false, false, true)
+	_play_one_shot(fall_sfx)
 
 
 func _set_ui_state(show_menu: bool, show_hud: bool, show_game_over: bool) -> void:
@@ -95,6 +115,8 @@ func _spawn_platform(spawn_position: Vector2, type: int) -> void:
 	platforms_root.add_child(platform)
 	if platform.has_method("setup"):
 		platform.setup(type)
+	if platform.has_signal("broken"):
+		platform.broken.connect(_on_platform_broken)
 
 
 func _choose_platform_type() -> int:
@@ -134,3 +156,26 @@ func _check_game_over() -> void:
 func _clear_platforms() -> void:
 	for platform in platforms_root.get_children():
 		platform.queue_free()
+
+
+func _on_player_bounced() -> void:
+	_play_one_shot(jump_sfx)
+
+
+func _on_platform_broken() -> void:
+	_play_one_shot(break_sfx)
+
+
+func _play_music() -> void:
+	if not music.playing:
+		music.play()
+
+
+func _on_music_finished() -> void:
+	if running:
+		music.play()
+
+
+func _play_one_shot(player_node: AudioStreamPlayer) -> void:
+	player_node.stop()
+	player_node.play()
