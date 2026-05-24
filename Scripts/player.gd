@@ -1,8 +1,6 @@
 extends CharacterBody2D
 
 signal fell_below_screen
-signal bounced
-
 @export var move_speed := 520.0
 @export var jump_velocity := -940.0
 @export var gravity := 2200.0
@@ -44,7 +42,6 @@ func _physics_process(delta: float) -> void:
 
 func bounce(extra_multiplier := 1.0) -> void:
 	velocity.y = jump_velocity * extra_multiplier
-	bounced.emit()
 	_play_jump_animation()
 
 

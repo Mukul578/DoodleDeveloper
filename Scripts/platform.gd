@@ -1,5 +1,6 @@
 extends AnimatableBody2D
 
+signal landed(platform_type: int)
 signal broken
 
 enum PlatformType { NORMAL, MOVING, BREAKABLE }
@@ -42,11 +43,13 @@ func on_player_landed(player: Node) -> void:
 	if platform_type == PlatformType.BREAKABLE:
 		if player.has_method("bounce"):
 			player.bounce()
+		landed.emit(platform_type)
 		_break()
 		return
 
 	if player.has_method("bounce"):
 		player.bounce()
+	landed.emit(platform_type)
 
 
 func _break() -> void:
