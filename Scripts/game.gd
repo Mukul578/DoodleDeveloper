@@ -4,8 +4,8 @@ const BASE_VIEWPORT_WIDTH := 720.0
 const BASE_VIEWPORT_HEIGHT := 1280.0
 # Control tactil por velocidad: cada drag aporta el desplazamiento real del dedo.
 # Si el dedo se frena, el desplazamiento baja; si deja de emitir drag, paramos.
-const TOUCH_DRAG_DEADZONE := 0.5
-const TOUCH_DRAG_FULL_SPEED := 18.0
+const TOUCH_DRAG_DEADZONE := 0.25
+const TOUCH_DRAG_FULL_SPEED := 7.0
 const TOUCH_STOP_TIMEOUT := 0.07
 const PLATFORM_SCENE := preload("res://Scenes/Platform.tscn")
 const PLATFORM_NORMAL := 0
