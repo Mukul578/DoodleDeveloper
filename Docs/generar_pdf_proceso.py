@@ -173,10 +173,16 @@ def main():
         ], CAPTURES / "02_gameplay.jpg", "Captura 3. Plataformas distribuidas durante la partida."),
         page("Mejora del control tactil", [
             "La primera version usaba zonas tactiles invisibles a izquierda y derecha. Funcionaba, pero era poco precisa.",
-            "La mejora actual usa un slider invisible: al tocar la pantalla se crea un centro, y el desplazamiento horizontal del dedo se transforma en direccion e intensidad.",
-            "Si el dedo se mueve hacia la izquierda, el jugador se mueve a la izquierda. Si vuelve cerca del punto inicial, se detiene.",
-            "Esta solucion evita botones visibles y permite un control mas progresivo en movil.",
-        ], CAPTURES / "03_control_slider_invisible.jpg", "Captura 4. Prueba del control tactil con slider invisible."),
+            "La mejora actual sigue el movimiento instantaneo del dedo: el desplazamiento horizontal de cada drag se transforma en direccion e intensidad.",
+            "Si el dedo se mueve hacia la izquierda, el jugador se mueve a la izquierda. Si el dedo ralentiza, el jugador ralentiza. Si el dedo se para, el jugador se para.",
+            "Tambien permite cambiar de sentido sin levantar el dedo, porque cada nuevo desplazamiento decide la direccion actual.",
+        ], CAPTURES / "03_control_slider_invisible.jpg", "Captura 4. Prueba del control tactil por deslizamiento."),
+        page("Explicacion de los scripts principales", [
+            "game.gd gestiona el flujo de partida: menu, inicio, pausa, Game Over, puntuacion, camara, creacion de plataformas, audio y entrada tactil.",
+            "La entrada tactil lee InputEventScreenTouch e InputEventScreenDrag. El valor relative.x del drag se convierte en una direccion entre -1 y 1. Si no llegan mas eventos de drag durante un pequeno intervalo, se interpreta que el dedo se ha parado.",
+            "player.gd controla la fisica del jugador: direccion horizontal, gravedad, move_and_slide, rebote y envoltura lateral de pantalla.",
+            "platform.gd define plataformas normales, moviles y rompibles. La rompible deja rebotar una vez y despues desactiva la colision y se destruye.",
+        ]),
         page("Viewport adaptado a dispositivos moviles", [
             "En pruebas se detecto que el fondo estaba fijo a 720 x 1280 y en pantallas mas altas aparecia una franja gris.",
             "Se cambio el fondo para que se ancle a pantalla completa y se actualizo la logica para usar el viewport real.",
@@ -198,7 +204,7 @@ def main():
         ], CAPTURES / "06_game_over_record.jpg", "Captura 8. Pantalla de Game Over con record."),
         page("Conclusion", [
             "El prototipo ya cuenta con salto automatico, plataformas infinitas, variantes de plataforma, HUD, pausa, configuracion, audio, animacion, Game Over, viewport adaptable y exportacion Android.",
-            "Las mejoras con mayor impacto han sido el viewport adaptado a pantallas moviles y el control tactil basado en slider invisible.",
+            "Las mejoras con mayor impacto han sido el viewport adaptado a pantallas moviles y el control tactil basado en el deslizamiento del dedo.",
             "El documento queda preparado como base tecnica para ampliarlo y maquetarlo en una sesion posterior.",
         ]),
     ]

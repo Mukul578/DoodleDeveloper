@@ -26,10 +26,12 @@ func _physics_process(delta: float) -> void:
 	if not active:
 		return
 
+	# Teclado para probar en PC; en movil touch_direction lo sobreescribe.
 	var direction := Input.get_axis("move_left", "move_right")
 	if not is_zero_approx(touch_direction):
 		direction = touch_direction
 
+	# El eje X lo decide la entrada y el eje Y siempre aplica gravedad.
 	velocity.x = direction * move_speed
 	velocity.y += gravity * delta
 	var was_falling := velocity.y > 0.0
@@ -53,6 +55,7 @@ func stop() -> void:
 
 
 func _wrap_horizontally() -> void:
+	# Como en Doodle Jump: salir por un lado devuelve al jugador por el contrario.
 	var margin := 48.0
 	if position.x < -margin:
 		position.x = viewport_width + margin
@@ -64,6 +67,7 @@ func _handle_platform_bounce(was_falling: bool) -> void:
 	if not was_falling:
 		return
 
+	# Solo rebotamos si la colision viene desde arriba de la plataforma.
 	for index in get_slide_collision_count():
 		var collision := get_slide_collision(index)
 		if collision.get_normal().y < -0.65:
@@ -76,6 +80,7 @@ func _handle_platform_bounce(was_falling: bool) -> void:
 
 
 func _update_air_pose() -> void:
+	# La animacion se basa en el estado vertical: subiendo o cayendo.
 	if velocity.y > 90.0:
 		if not _falling_pose:
 			_falling_pose = true
@@ -87,6 +92,7 @@ func _update_air_pose() -> void:
 
 
 func _play_jump_animation() -> void:
+	# Squash and stretch: comprime al tocar y estira al salir del salto.
 	_falling_pose = false
 	if _visual_tween != null:
 		_visual_tween.kill()

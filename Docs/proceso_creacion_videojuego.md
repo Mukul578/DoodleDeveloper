@@ -51,19 +51,42 @@ También se incluyeron sonidos distintos por tipo de plataforma para mejorar la 
 
 La primera aproximación usaba zonas táctiles invisibles a izquierda y derecha de la pantalla. Esta solución era sencilla, pero generaba una experiencia poco precisa: el jugador se movía por zona pulsada, no por intención real del dedo.
 
-Después se sustituyó por una función de desplazamiento táctil. La mejora final consiste en un **slider invisible**:
+Después se sustituyó por una función de desplazamiento táctil. La mejora final consiste en seguir el **movimiento instantáneo del dedo**:
 
-- Al tocar la pantalla se crea un punto central invisible.
-- Si el dedo se desplaza hacia la izquierda, el jugador se mueve a la izquierda.
-- Si el dedo se desplaza hacia la derecha, el jugador se mueve a la derecha.
-- Cuanto mayor es el desplazamiento, mayor es la intensidad del movimiento.
-- Si el dedo vuelve cerca del punto inicial, el jugador se detiene.
+- Si el dedo se desliza hacia la izquierda, el jugador se mueve a la izquierda.
+- Si el dedo se desliza más lento, el jugador reduce su velocidad.
+- Si el dedo se para sin levantarlo, el jugador se para.
+- Si el dedo cambia de sentido sin levantarlo, el jugador cambia de sentido.
 
-Esta solución se ajusta mejor a controles móviles porque no obliga a mostrar botones en pantalla y permite un movimiento más progresivo.
+Esta solución se ajusta mejor a controles móviles porque no obliga a mostrar botones en pantalla y permite que el personaje responda al ritmo real del dedo.
 
-![Control táctil con slider invisible](capturas/03_control_slider_invisible.jpg)
+![Control táctil por deslizamiento](capturas/03_control_slider_invisible.jpg)
 
-## 6. Pausa, configuración y audio
+## 6. Explicación de los scripts principales
+
+### `game.gd`
+
+Este script controla el estado general de la partida. Gestiona el inicio del juego, el menú principal, la pausa, el Game Over, la puntuación, la cámara, la creación de plataformas y los ajustes de audio.
+
+La parte táctil usa eventos de `InputEventScreenTouch` e `InputEventScreenDrag`. Cuando se detecta un dedo activo, el desplazamiento horizontal del evento (`relative.x`) se convierte en una dirección entre `-1` y `1`. Si dejan de llegar eventos de arrastre durante un pequeño intervalo, se interpreta que el dedo se ha parado y se pone la dirección táctil a `0`.
+
+También recalcula el tamaño real del viewport para adaptar el juego a pantallas móviles con distintas proporciones.
+
+### `player.gd`
+
+Este script controla la física del jugador. En cada frame de física calcula la dirección horizontal, aplica gravedad, mueve el cuerpo con `move_and_slide()` y comprueba si ha aterrizado sobre una plataforma.
+
+El movimiento horizontal puede venir del teclado durante pruebas en PC o del valor táctil calculado en `game.gd`. El jugador también se envuelve lateralmente: si sale por un lado de la pantalla, entra por el lado contrario.
+
+Además incluye animaciones simples de squash and stretch para diferenciar salto, caída y rebote sobre plataforma.
+
+### `platform.gd`
+
+Este script define el comportamiento de las plataformas. Todas usan la misma escena base, pero cambian según su tipo: normal, móvil o rompible.
+
+La plataforma móvil oscila lateralmente usando una onda senoidal. La plataforma rompible primero permite que el jugador rebote y después desactiva su colisión, reproduce una animación de caída/desvanecimiento y se elimina.
+
+## 7. Pausa, configuración y audio
 
 Se añadió un botón de pausa durante el gameplay. La pausa detiene la física, la cámara y los controles del jugador. Desde el panel de pausa se puede continuar, abrir la configuración o volver al menú principal.
 
@@ -78,7 +101,7 @@ Durante las pruebas se detectó que la música sonaba demasiado baja incluso al 
 
 ![Configuración de audio](capturas/05_configuracion_audio.jpg)
 
-## 7. Adaptación del viewport a móviles
+## 8. Adaptación del viewport a móviles
 
 En pruebas sobre móvil se detectó que el fondo quedaba fijo a 720 x 1280 y, en pantallas más altas, aparecía una franja gris fuera del área visual del juego.
 
@@ -91,13 +114,13 @@ La mejora aplicada consiste en usar el tamaño real del viewport del dispositivo
 
 Con esto el juego se adapta mejor a móviles con distintas proporciones de pantalla.
 
-## 8. Game Over y récord
+## 9. Game Over y récord
 
 La pantalla de Game Over muestra la puntuación conseguida y el récord máximo de la sesión. También incluye botones para reintentar o volver al menú principal.
 
 ![Game Over con récord](capturas/06_game_over_record.jpg)
 
-## 9. Exportación Android
+## 10. Exportación Android
 
 Para preparar Android se siguieron estos pasos:
 
@@ -112,8 +135,8 @@ El APK generado se encuentra en:
 
 `builds/DoodleDeveloper-debug.apk`
 
-## 10. Conclusión
+## 11. Conclusión
 
 El proyecto ya dispone de una base jugable completa para móvil: salto automático, plataformas infinitas, variantes de plataforma, HUD, pausa, Game Over, configuración de audio, sonidos, animación del jugador, viewport adaptado y exportación APK.
 
-Las mejoras más importantes realizadas durante la iteración han sido la adaptación del viewport para dispositivos móviles y la sustitución de controles táctiles por un slider invisible, ya que afectan directamente a la experiencia real en Android.
+Las mejoras más importantes realizadas durante la iteración han sido la adaptación del viewport para dispositivos móviles y la sustitución de controles táctiles por movimiento según el deslizamiento del dedo, ya que afectan directamente a la experiencia real en Android.

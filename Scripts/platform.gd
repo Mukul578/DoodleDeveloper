@@ -32,6 +32,7 @@ func _physics_process(delta: float) -> void:
 	if platform_type != PlatformType.MOVING or _broken:
 		return
 
+	# La plataforma movil oscila desde su posicion inicial con una onda suave.
 	_phase += delta * move_speed / max(move_distance, 1.0)
 	position.x = _start_x + sin(_phase) * move_distance
 
@@ -41,6 +42,7 @@ func on_player_landed(player: Node) -> void:
 		return
 
 	if platform_type == PlatformType.BREAKABLE:
+		# La rompible primero deja rebotar al jugador y despues se destruye.
 		if player.has_method("bounce"):
 			player.bounce()
 		landed.emit(platform_type)
@@ -55,6 +57,7 @@ func on_player_landed(player: Node) -> void:
 func _break() -> void:
 	_broken = true
 	broken.emit()
+	# Desactivamos la colision antes de animarla para que no pueda rebotar dos veces.
 	collision_shape.set_deferred("disabled", true)
 	if sprite != null:
 		sprite.modulate = Color(1.0, 0.55, 0.45, 0.65)
@@ -68,6 +71,7 @@ func _apply_visuals() -> void:
 	if sprite == null:
 		return
 
+	# Todas las variantes comparten escena; aqui cambiamos solo textura/comportamiento.
 	match platform_type:
 		PlatformType.NORMAL:
 			sprite.texture = preload("res://Assets/Sprites/platform_normal.png")

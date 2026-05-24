@@ -2,8 +2,11 @@ extends Node2D
 
 const BASE_VIEWPORT_WIDTH := 720.0
 const BASE_VIEWPORT_HEIGHT := 1280.0
-const TOUCH_SLIDER_DEADZONE := 18.0
-const TOUCH_SLIDER_RANGE := 160.0
+# Control tactil por velocidad: cada drag aporta el desplazamiento real del dedo.
+# Si el dedo se frena, el desplazamiento baja; si deja de emitir drag, paramos.
+const TOUCH_DRAG_DEADZONE := 0.5
+const TOUCH_DRAG_FULL_SPEED := 18.0
+const TOUCH_STOP_TIMEOUT := 0.07
 const PLATFORM_SCENE := preload("res://Scenes/Platform.tscn")
 const PLATFORM_NORMAL := 0
 const PLATFORM_MOVING := 1
@@ -47,8 +50,7 @@ var _music_volume := 1.0
 var _effects_volume := 0.85
 var _viewport_size := Vector2(BASE_VIEWPORT_WIDTH, BASE_VIEWPORT_HEIGHT)
 var _active_touch_index := -1
-var _touch_slider_origin_x := 0.0
-var _touch_slider_position_x := 0.0
+var _touch_idle_time := 0.0
 
 
 func _ready() -> void:
@@ -74,25 +76,28 @@ func _input(event: InputEvent) -> void:
 	if not running or paused:
 		return
 
+	# Un unico dedo controla al jugador. Mientras este pulsado, cada drag actualiza
+	# la direccion segun el movimiento instantaneo del dedo, no segun una zona fija.
 	if event is InputEventScreenTouch:
 		if event.pressed and _active_touch_index == -1:
 			_active_touch_index = event.index
-			_touch_slider_origin_x = event.position.x
-			_touch_slider_position_x = event.position.x
+			_touch_idle_time = 0.0
 			player.touch_direction = 0.0
 		elif not event.pressed and event.index == _active_touch_index:
 			_active_touch_index = -1
+			_touch_idle_time = 0.0
 			player.touch_direction = 0.0
 	elif event is InputEventScreenDrag and event.index == _active_touch_index:
-		_touch_slider_position_x = event.position.x
-		_update_touch_slider_direction()
+		_touch_idle_time = 0.0
+		_update_touch_drag_direction(event.relative.x)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	_refresh_viewport_size()
 	if not running or paused:
 		return
 
+	_stop_touch_when_finger_stops(delta)
 	_update_camera()
 	_update_score()
 	_spawn_platforms_until_ready()
@@ -135,6 +140,7 @@ func pause_game() -> void:
 	pause_layer.visible = true
 	touch_controls.visible = false
 	_active_touch_index = -1
+	_touch_idle_time = 0.0
 	player.touch_direction = 0.0
 	Input.action_release("move_left")
 	Input.action_release("move_right")
@@ -152,6 +158,8 @@ func resume_game() -> void:
 
 func _show_menu() -> void:
 	running = false
+	_active_touch_index = -1
+	_touch_idle_time = 0.0
 	player.stop()
 	_set_ui_state(true, false, false, false, false)
 
@@ -178,12 +186,14 @@ func _set_ui_state(show_menu: bool, show_hud: bool, show_game_over: bool, show_p
 
 
 func _create_starting_platforms() -> void:
+	# La primera plataforma siempre queda centrada bajo el jugador.
 	_spawn_platform(Vector2(_viewport_size.x * 0.5, START_Y), 0)
 	next_platform_y = START_Y - 150.0
 	_spawn_platforms_until_ready()
 
 
 func _spawn_platforms_until_ready() -> void:
+	# Generamos plataformas por encima de la camara antes de que entren en pantalla.
 	var target_y := camera.position.y - _viewport_size.y * 0.75
 	while next_platform_y > target_y:
 		var x := randf_range(95.0, _viewport_size.x - 95.0)
@@ -214,12 +224,14 @@ func _choose_platform_type() -> int:
 
 func _update_camera() -> void:
 	camera.position.x = _viewport_size.x * 0.5
+	# La camara solo sube; nunca baja si el jugador cae.
 	var camera_ceiling := camera.position.y - 120.0
 	if player.position.y < camera_ceiling:
 		camera.position.y = player.position.y + 120.0
 
 
 func _update_score() -> void:
+	# La puntuacion usa la mejor altura alcanzada, no la posicion actual al caer.
 	highest_y = min(highest_y, player.position.y)
 	score = max(score, int((score_start_y - highest_y) / SCORE_PIXELS_PER_POINT))
 	score_label.text = "%06d" % score
@@ -305,6 +317,7 @@ func _on_effects_volume_changed(value: float) -> void:
 
 
 func _apply_volume_settings() -> void:
+	# Los sliders guardan valores lineales 0..1, Godot reproduce audio en decibelios.
 	music.volume_db = _linear_to_db(_music_volume, -4.0)
 	for sfx in [jump_sfx, break_sfx, fall_sfx, normal_platform_sfx, moving_platform_sfx, breakable_platform_sfx]:
 		sfx.volume_db = _linear_to_db(_effects_volume, -6.0)
@@ -317,6 +330,7 @@ func _linear_to_db(value: float, base_db: float) -> float:
 
 
 func _refresh_viewport_size() -> void:
+	# En movil hay muchas relaciones de aspecto; usamos el viewport real del dispositivo.
 	_viewport_size = get_viewport_rect().size
 	if _viewport_size.x <= 0.0 or _viewport_size.y <= 0.0:
 		_viewport_size = Vector2(BASE_VIEWPORT_WIDTH, BASE_VIEWPORT_HEIGHT)
@@ -324,9 +338,16 @@ func _refresh_viewport_size() -> void:
 	camera.position.x = _viewport_size.x * 0.5
 
 
-func _update_touch_slider_direction() -> void:
-	var displacement := _touch_slider_position_x - _touch_slider_origin_x
-	if absf(displacement) <= TOUCH_SLIDER_DEADZONE:
+func _update_touch_drag_direction(relative_x: float) -> void:
+	if absf(relative_x) <= TOUCH_DRAG_DEADZONE:
 		player.touch_direction = 0.0
 	else:
-		player.touch_direction = clampf(displacement / TOUCH_SLIDER_RANGE, -1.0, 1.0)
+		player.touch_direction = clampf(relative_x / TOUCH_DRAG_FULL_SPEED, -1.0, 1.0)
+
+
+func _stop_touch_when_finger_stops(delta: float) -> void:
+	if _active_touch_index == -1 or is_zero_approx(player.touch_direction):
+		return
+	_touch_idle_time += delta
+	if _touch_idle_time > TOUCH_STOP_TIMEOUT:
+		player.touch_direction = 0.0
