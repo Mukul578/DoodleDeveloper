@@ -39,6 +39,7 @@ size = Vector2(360, 1280)
 size = Vector2(360, 1280)
 
 [node name="Main" type="Node2D" unique_id=689423973]
+process_mode = 3
 script = ExtResource("1_game_script")
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=302644755]
@@ -50,8 +51,10 @@ offset_bottom = 1280.0
 color = Color(0.92, 0.965, 1, 1)
 
 [node name="Platforms" type="Node2D" parent="." unique_id=23798112]
+process_mode = 1
 
 [node name="Player" parent="." unique_id=812478769 instance=ExtResource("2_player_scene")]
+process_mode = 1
 position = Vector2(360, 950)
 
 [node name="Audio" type="Node" parent="."]

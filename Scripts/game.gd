@@ -18,6 +18,7 @@ const SCORE_PIXELS_PER_POINT := 10.0
 @onready var game_over_layer: CanvasLayer = $UI/GameOverLayer
 @onready var pause_layer: CanvasLayer = $UI/PauseLayer
 @onready var settings_layer: CanvasLayer = $UI/SettingsLayer
+@onready var touch_controls: Control = $UI/HUDLayer/TouchControls
 @onready var score_label: Label = $UI/HUDLayer/MarginContainer/ScoreLabel
 @onready var final_score_label: Label = $UI/GameOverLayer/Panel/VBoxContainer/FinalScoreLabel
 @onready var best_score_label: Label = $UI/GameOverLayer/Panel/VBoxContainer/BestScoreLabel
@@ -44,7 +45,6 @@ var _effects_volume := 0.85
 
 
 func _ready() -> void:
-	process_mode = Node.PROCESS_MODE_ALWAYS
 	randomize()
 	player.viewport_width = VIEWPORT_SIZE.x
 	$UI/MenuLayer/Panel/VBoxContainer/StartButton.pressed.connect(start_game)
@@ -105,6 +105,9 @@ func pause_game() -> void:
 		return
 	paused = true
 	pause_layer.visible = true
+	touch_controls.visible = false
+	Input.action_release("move_left")
+	Input.action_release("move_right")
 	get_tree().paused = true
 
 
@@ -114,6 +117,7 @@ func resume_game() -> void:
 	get_tree().paused = false
 	paused = false
 	pause_layer.visible = false
+	touch_controls.visible = true
 
 
 func _show_menu() -> void:
@@ -140,6 +144,7 @@ func _set_ui_state(show_menu: bool, show_hud: bool, show_game_over: bool, show_p
 	game_over_layer.visible = show_game_over
 	pause_layer.visible = show_pause
 	settings_layer.visible = show_settings
+	touch_controls.visible = show_hud and not show_pause and not show_settings
 
 
 func _create_starting_platforms() -> void:
