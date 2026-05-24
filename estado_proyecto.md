@@ -1,7 +1,7 @@
 # Estado del Proyecto - Doodle Jump Clone (DAM)
 
-## Última actualización: Hito 5 en progreso
-Proyecto Godot creado con prototipo jugable estilo Doodle Jump: jugador animado, plataformas infinitas, cámara ascendente, variantes de plataforma, puntuación, récord, menú, configuración de volumen, pausa, HUD, pantalla de Game Over, controles táctiles y audio por tipo de plataforma.
+## Última actualización: APK Debug generado
+Proyecto Godot creado con prototipo jugable estilo Doodle Jump: jugador animado, plataformas infinitas, cámara ascendente, variantes de plataforma, puntuación, récord, menú, configuración de volumen, pausa, HUD, pantalla de Game Over, controles táctiles, audio por tipo de plataforma y exportación Android Debug.
 
 ## Hito 1: Configuración Inicial (Completado)
 - [x] Creación del proyecto en Godot 4.6.2 (Renderizador Mobile).
@@ -32,4 +32,4 @@ Proyecto Godot creado con prototipo jugable estilo Doodle Jump: jugador animado,
 - [x] Integrar efectos de sonido (salto, rotura, caída) y música de fondo.
 - [x] Afinar controles para móviles (botones táctiles invisibles o giroscopio).
 - [x] Crear preset Android Debug (`com.doodledeveloper.game`, versión `0.1.0`, vertical).
-- [ ] Compilación y exportación del APK final para dispositivos Android.
+- [x] Compilación y exportación del APK Debug para dispositivos Android.
