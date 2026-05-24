@@ -1,6 +1,10 @@
 extends Node2D
 
-const VIEWPORT_SIZE := Vector2(720.0, 1280.0)
+const BASE_VIEWPORT_WIDTH := 720.0
+const BASE_VIEWPORT_HEIGHT := 1280.0
+const TOUCH_DEADZONE := 4.0
+const TOUCH_SPEED_REFERENCE := 28.0
+const TOUCH_STILL_TIMEOUT_MS := 80
 const PLATFORM_SCENE := preload("res://Scenes/Platform.tscn")
 const PLATFORM_NORMAL := 0
 const PLATFORM_MOVING := 1
@@ -40,13 +44,16 @@ var next_platform_y := START_Y
 var running := false
 var paused := false
 var _settings_return_layer: CanvasLayer
-var _music_volume := 0.8
+var _music_volume := 1.0
 var _effects_volume := 0.85
+var _viewport_size := Vector2(BASE_VIEWPORT_WIDTH, BASE_VIEWPORT_HEIGHT)
+var _active_touch_index := -1
+var _last_touch_drag_time_ms := 0
 
 
 func _ready() -> void:
 	randomize()
-	player.viewport_width = VIEWPORT_SIZE.x
+	_refresh_viewport_size()
 	$UI/MenuLayer/Panel/VBoxContainer/StartButton.pressed.connect(start_game)
 	$UI/MenuLayer/Panel/VBoxContainer/SettingsButton.pressed.connect(_open_settings_from_menu)
 	$UI/HUDLayer/PauseButton.pressed.connect(pause_game)
@@ -63,10 +70,33 @@ func _ready() -> void:
 	_show_menu()
 
 
-func _process(_delta: float) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if not running or paused:
 		return
 
+	if event is InputEventScreenTouch:
+		if event.pressed and _active_touch_index == -1:
+			_active_touch_index = event.index
+			_last_touch_drag_time_ms = Time.get_ticks_msec()
+			player.touch_direction = 0.0
+		elif not event.pressed and event.index == _active_touch_index:
+			_active_touch_index = -1
+			player.touch_direction = 0.0
+	elif event is InputEventScreenDrag and event.index == _active_touch_index:
+		var delta_x: float = event.relative.x
+		_last_touch_drag_time_ms = Time.get_ticks_msec()
+		if absf(delta_x) <= TOUCH_DEADZONE:
+			player.touch_direction = 0.0
+		else:
+			player.touch_direction = clampf(delta_x / TOUCH_SPEED_REFERENCE, -1.0, 1.0)
+
+
+func _process(_delta: float) -> void:
+	_refresh_viewport_size()
+	if not running or paused:
+		return
+
+	_stop_touch_movement_when_still()
 	_update_camera()
 	_update_score()
 	_spawn_platforms_until_ready()
@@ -82,8 +112,9 @@ func start_game() -> void:
 	score_start_y = START_Y - 90.0
 	highest_y = score_start_y
 	next_platform_y = START_Y
-	camera.position = Vector2(VIEWPORT_SIZE.x * 0.5, VIEWPORT_SIZE.y * 0.5)
-	player.reset(Vector2(VIEWPORT_SIZE.x * 0.5, score_start_y))
+	_refresh_viewport_size()
+	camera.position = Vector2(_viewport_size.x * 0.5, _viewport_size.y * 0.5)
+	player.reset(Vector2(_viewport_size.x * 0.5, score_start_y))
 	_create_starting_platforms()
 	score_label.text = "%06d" % score
 	_set_ui_state(false, true, false, false, false)
@@ -95,8 +126,9 @@ func show_main_menu() -> void:
 	get_tree().paused = false
 	paused = false
 	_clear_platforms()
-	camera.position = Vector2(VIEWPORT_SIZE.x * 0.5, VIEWPORT_SIZE.y * 0.5)
-	player.position = Vector2(VIEWPORT_SIZE.x * 0.5, START_Y - 90.0)
+	_refresh_viewport_size()
+	camera.position = Vector2(_viewport_size.x * 0.5, _viewport_size.y * 0.5)
+	player.position = Vector2(_viewport_size.x * 0.5, START_Y - 90.0)
 	_show_menu()
 
 
@@ -106,6 +138,9 @@ func pause_game() -> void:
 	paused = true
 	pause_layer.visible = true
 	touch_controls.visible = false
+	_active_touch_index = -1
+	_last_touch_drag_time_ms = 0
+	player.touch_direction = 0.0
 	Input.action_release("move_left")
 	Input.action_release("move_right")
 	get_tree().paused = true
@@ -148,15 +183,15 @@ func _set_ui_state(show_menu: bool, show_hud: bool, show_game_over: bool, show_p
 
 
 func _create_starting_platforms() -> void:
-	_spawn_platform(Vector2(VIEWPORT_SIZE.x * 0.5, START_Y), 0)
+	_spawn_platform(Vector2(_viewport_size.x * 0.5, START_Y), 0)
 	next_platform_y = START_Y - 150.0
 	_spawn_platforms_until_ready()
 
 
 func _spawn_platforms_until_ready() -> void:
-	var target_y := camera.position.y - VIEWPORT_SIZE.y * 0.75
+	var target_y := camera.position.y - _viewport_size.y * 0.75
 	while next_platform_y > target_y:
-		var x := randf_range(95.0, VIEWPORT_SIZE.x - 95.0)
+		var x := randf_range(95.0, _viewport_size.x - 95.0)
 		_spawn_platform(Vector2(x, next_platform_y), _choose_platform_type())
 		next_platform_y -= randf_range(PLATFORM_VERTICAL_GAP.x, PLATFORM_VERTICAL_GAP.y)
 
@@ -183,6 +218,7 @@ func _choose_platform_type() -> int:
 
 
 func _update_camera() -> void:
+	camera.position.x = _viewport_size.x * 0.5
 	var camera_ceiling := camera.position.y - 120.0
 	if player.position.y < camera_ceiling:
 		camera.position.y = player.position.y + 120.0
@@ -195,14 +231,14 @@ func _update_score() -> void:
 
 
 func _cleanup_platforms() -> void:
-	var bottom_limit := camera.position.y + VIEWPORT_SIZE.y * 0.5 + CLEANUP_MARGIN
+	var bottom_limit := camera.position.y + _viewport_size.y * 0.5 + CLEANUP_MARGIN
 	for platform in platforms_root.get_children():
 		if platform.position.y > bottom_limit:
 			platform.queue_free()
 
 
 func _check_game_over() -> void:
-	var bottom_limit := camera.position.y + VIEWPORT_SIZE.y * 0.5 + 120.0
+	var bottom_limit := camera.position.y + _viewport_size.y * 0.5 + 120.0
 	if player.position.y > bottom_limit:
 		_game_over()
 
@@ -274,7 +310,7 @@ func _on_effects_volume_changed(value: float) -> void:
 
 
 func _apply_volume_settings() -> void:
-	music.volume_db = _linear_to_db(_music_volume, -18.0)
+	music.volume_db = _linear_to_db(_music_volume, -4.0)
 	for sfx in [jump_sfx, break_sfx, fall_sfx, normal_platform_sfx, moving_platform_sfx, breakable_platform_sfx]:
 		sfx.volume_db = _linear_to_db(_effects_volume, -6.0)
 
@@ -283,3 +319,18 @@ func _linear_to_db(value: float, base_db: float) -> float:
 	if value <= 0.0:
 		return -80.0
 	return base_db + linear_to_db(value)
+
+
+func _refresh_viewport_size() -> void:
+	_viewport_size = get_viewport_rect().size
+	if _viewport_size.x <= 0.0 or _viewport_size.y <= 0.0:
+		_viewport_size = Vector2(BASE_VIEWPORT_WIDTH, BASE_VIEWPORT_HEIGHT)
+	player.viewport_width = _viewport_size.x
+	camera.position.x = _viewport_size.x * 0.5
+
+
+func _stop_touch_movement_when_still() -> void:
+	if _active_touch_index == -1 or is_zero_approx(player.touch_direction):
+		return
+	if Time.get_ticks_msec() - _last_touch_drag_time_ms > TOUCH_STILL_TIMEOUT_MS:
+		player.touch_direction = 0.0

@@ -32,12 +32,6 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_left_touch"]
-size = Vector2(360, 1280)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_right_touch"]
-size = Vector2(360, 1280)
-
 [node name="Main" type="Node2D" unique_id=689423973]
 process_mode = 3
 script = ExtResource("1_game_script")
@@ -46,8 +40,11 @@ script = ExtResource("1_game_script")
 layer = -10
 
 [node name="Background" type="ColorRect" parent="BackgroundLayer" unique_id=397583344]
-offset_right = 720.0
-offset_bottom = 1280.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.92, 0.965, 1, 1)
 
 [node name="Platforms" type="Node2D" parent="." unique_id=23798112]
@@ -85,7 +82,7 @@ volume_db = -6.0
 
 [node name="Music" type="AudioStreamPlayer" parent="Audio"]
 stream = ExtResource("6_music_loop")
-volume_db = -18.0
+volume_db = -4.0
 autoplay = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1281646941]
@@ -195,20 +192,6 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_button")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "II"
-
-[node name="LeftTouch" type="TouchScreenButton" parent="UI/HUDLayer/TouchControls" unique_id=846647538]
-position = Vector2(180, 640)
-shape = SubResource("RectangleShape2D_left_touch")
-passby_press = true
-action = "move_left"
-visibility_mode = 1
-
-[node name="RightTouch" type="TouchScreenButton" parent="UI/HUDLayer/TouchControls" unique_id=944821157]
-position = Vector2(540, 640)
-shape = SubResource("RectangleShape2D_right_touch")
-passby_press = true
-action = "move_right"
-visibility_mode = 1
 
 [node name="GameOverLayer" type="CanvasLayer" parent="UI" unique_id=804624740]
 layer = 20
@@ -398,7 +381,7 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 max_value = 1.0
 step = 0.01
-value = 0.8
+value = 1.0
 
 [node name="EffectsLabel" type="Label" parent="UI/SettingsLayer/Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 38)
